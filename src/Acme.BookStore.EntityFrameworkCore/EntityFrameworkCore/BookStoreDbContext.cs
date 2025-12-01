@@ -14,6 +14,7 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Acme.BookStore.Books;
 
 namespace Acme.BookStore.EntityFrameworkCore;
 
@@ -42,6 +43,7 @@ public class BookStoreDbContext :
      */
 
     // Identity
+    public DbSet<Book> Books { get; set; }
     public DbSet<IdentityUser> Users { get; set; }
     public DbSet<IdentityRole> Roles { get; set; }
     public DbSet<IdentityClaimType> ClaimTypes { get; set; }
@@ -87,5 +89,12 @@ public class BookStoreDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
+         builder.Entity<Book>(b =>
+        {
+            b.ToTable(BookStoreConsts.DbTablePrefix + "Books",
+                BookStoreConsts.DbSchema);
+            b.ConfigureByConvention(); //auto configure for the base class props
+            b.Property(x => x.Name).IsRequired().HasMaxLength(128);
+        });
     }
 }
