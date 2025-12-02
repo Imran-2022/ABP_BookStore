@@ -8,6 +8,11 @@ export const APP_ROUTES: Routes = [
     loadComponent: () => import('./home/home.component').then(c => c.HomeComponent),
   },
   {
+    path: 'books',
+    pathMatch: 'full',
+    loadComponent: () => import('./book/book').then(c => c.Book),
+  },
+  {
     path: 'account',
     loadChildren: () => import('@abp/ng.account').then(c => c.createRoutes()),
   },
