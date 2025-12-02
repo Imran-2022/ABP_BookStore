@@ -22,13 +22,16 @@ function configureRoutes() {
         name: '::Menu:BookStore',
         iconClass: 'fas fa-book',
         order: 2,
+        requiredPolicy: 'BookStore.Books',
         layout: eLayoutType.application,
       },
       {
         path: '/books',
         name: '::Menu:Books',
         parentName: '::Menu:BookStore',
+        requiredPolicy: 'BookStore.Books',
         layout: eLayoutType.application,
       },
+      
   ]);
 }

@@ -11,6 +11,14 @@ export const APP_ROUTES: Routes = [
     path: 'books',
     pathMatch: 'full',
     loadComponent: () => import('./book/book').then(c => c.Book),
+    //  ADD GUARDS AND POLICY HERE
+    canActivate: [authGuard, permissionGuard],
+    data: {
+      // Use the base permission you defined in the C# backend
+      // requiredPolicy: 'BookStore.Books.Default', this not correct. as --
+      requiredPolicy: 'BookStore.Books',
+      // redirectPath: '/', this redirect not work.
+    },
   },
   {
     path: 'account',
