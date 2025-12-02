@@ -20,6 +20,19 @@ export const APP_ROUTES: Routes = [
       // redirectPath: '/', this redirect not work.
     },
   },
+  // ADD NEW AUTHORS ROUTE HERE
+    {
+        path: 'authors', // <-- The URL path
+        pathMatch: 'full',
+        // Assuming you will create an Author standalone component soon:
+        loadComponent: () => import('./author/author').then(c => c.Author), 
+        canActivate: [authGuard, permissionGuard],
+        data: {
+            // Assuming you will define this policy in C# as "BookStore.Authors"
+            requiredPolicy: 'BookStore.Authors', 
+            // redirectPath: '/',
+        },
+    },
   {
     path: 'account',
     loadChildren: () => import('@abp/ng.account').then(c => c.createRoutes()),

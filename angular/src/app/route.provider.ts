@@ -10,28 +10,37 @@ export const APP_ROUTE_PROVIDER = [
 function configureRoutes() {
   const routes = inject(RoutesService);
   routes.add([
-      {
-        path: '/',
-        name: '::Menu:Home',
-        iconClass: 'fas fa-home',
-        order: 1,
-        layout: eLayoutType.application,
-      },
-      {
-        path: '/book-store',
-        name: '::Menu:BookStore',
-        iconClass: 'fas fa-book',
-        order: 2,
-        requiredPolicy: 'BookStore.Books',
-        layout: eLayoutType.application,
-      },
-      {
-        path: '/books',
-        name: '::Menu:Books',
-        parentName: '::Menu:BookStore',
-        requiredPolicy: 'BookStore.Books',
-        layout: eLayoutType.application,
-      },
-      
+    {
+      path: '/',
+      name: '::Menu:Home',
+      iconClass: 'fas fa-home',
+      order: 1,
+      layout: eLayoutType.application,
+    },
+    {
+      path: '/book-store',
+      name: '::Menu:BookStore',
+      iconClass: 'fas fa-book',
+      order: 2,
+      requiredPolicy: 'BookStore.Books || BookStore.Authors',
+      layout: eLayoutType.application,
+    },
+    {
+      path: '/books',
+      name: '::Menu:Books',
+      parentName: '::Menu:BookStore',
+      requiredPolicy: 'BookStore.Books',
+      layout: eLayoutType.application,
+    },
+    {
+      path: '/authors',
+      name: '::Menu:Authors',
+      parentName: '::Menu:BookStore',
+      layout: eLayoutType.application,
+      requiredPolicy: 'BookStore.Authors',
+    },
+
+
+
   ]);
 }
