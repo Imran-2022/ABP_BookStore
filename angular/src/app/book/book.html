@@ -1,35 +1,100 @@
 <div class="card">
   <div class="card-header">
     <div class="row">
-      <div class="col col-md-6">
-        <h5 class="card-title">
-          {{ '::Menu:Books' | abpLocalization }}
-        </h5>
+      <div class="col-md-6">
+        <h5 class="card-title">{{ '::Menu:Books' | abpLocalization }}</h5>
       </div>
-      <div class="text-end col col-md-6"></div>
+      <div class="col-md-6 text-end pt-2">
+        <button class="btn btn-primary" (click)="openCreateModal(createModal)">
+          <i class="fa fa-plus me-1"></i>
+          {{ "::NewBook" | abpLocalization }}
+        </button>
+      </div>
     </div>
   </div>
 
   <div class="card-body">
-    <!-- // <ngx-datatable [rows]="book.items" [count]="book.totalCount" [list]="list" default></ngx-datatable> -->
-     <ngx-datatable class="bootstrap" [rows]="book.items || []" [count]="book.totalCount" [columnMode]="'force'"
-      [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [reorderable]="false">
+    <ngx-datatable
+      class="bootstrap"
+      [rows]="book.items || []"
+      [count]="book.totalCount"
+      [columnMode]="'force'"
+      [headerHeight]="50"
+      [footerHeight]="50"
+      [rowHeight]="50"
+      [reorderable]="false"
+    >
       <ngx-datatable-column [name]="'::Name' | abpLocalization" prop="name"></ngx-datatable-column>
+
       <ngx-datatable-column [name]="'::Type' | abpLocalization" prop="type">
-        <ng-template let-row="row" ngx-datatable-cell-template>
+        <ng-template ngx-datatable-cell-template let-row="row">
           {{ '::Enum:BookType.' + row.type | abpLocalization }}
         </ng-template>
       </ngx-datatable-column>
+
       <ngx-datatable-column [name]="'::PublishDate' | abpLocalization" prop="publishDate">
-        <ng-template let-row="row" ngx-datatable-cell-template>
+        <ng-template ngx-datatable-cell-template let-row="row">
           {{ row.publishDate | date }}
         </ng-template>
       </ngx-datatable-column>
+
       <ngx-datatable-column [name]="'::Price' | abpLocalization" prop="price">
-        <ng-template let-row="row" ngx-datatable-cell-template>
+        <ng-template ngx-datatable-cell-template let-row="row">
           {{ row.price | currency }}
         </ng-template>
       </ngx-datatable-column>
     </ngx-datatable>
   </div>
 </div>
+
+<!-- CREATE MODAL -->
+<ng-template #createModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">{{ "::NewBook" | abpLocalization }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="form">
+      <div class="mt-2">
+        <label>Name *</label>
+        <input class="form-control" formControlName="name" />
+      </div>
+
+      <div class="mt-2">
+        <label>Price *</label>
+        <input type="number" class="form-control" formControlName="price" />
+      </div>
+
+      <div class="mt-2">
+        <label>Type *</label>
+        <select class="form-control" formControlName="type">
+          <option [ngValue]="null">Select type</option>
+          <option *ngFor="let type of bookTypes" [ngValue]="type.value">
+            {{ '::Enum:BookType.' + type.value | abpLocalization }}
+          </option>
+        </select>
+      </div>
+
+      <div class="mt-2">
+        <label>Publish Date *</label>
+        <input
+          class="form-control"
+          ngbDatepicker
+          #dp="ngbDatepicker"
+          formControlName="publishDate"
+          (click)="dp.toggle()"
+        />
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-secondary" (click)="modal.dismiss()">{{ '::Close' | abpLocalization }}</button>
+
+    <button class="btn btn-primary" [disabled]="form.invalid" (click)="save(modal)">
+      <i class="fa fa-check me-1"></i>
+      {{ '::Save' | abpLocalization }}
+    </button>
+  </div>
+</ng-template>
