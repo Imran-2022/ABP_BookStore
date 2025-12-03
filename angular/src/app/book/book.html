@@ -6,7 +6,7 @@
       </div>
       <!-- *abpPermission="'BookStore.Books.Create'" -->
       <div class="col-md-6 text-end pt-2">
-        <button  class="btn btn-primary" (click)="openCreateModal(createModal)">
+        <button *abpPermission="'BookStore.Books.Create'" class="btn btn-primary" (click)="openCreateModal(createModal)">
           <i class="fa fa-plus me-1"></i>
           {{ "::NewBook" | abpLocalization }}
         </button>
@@ -42,11 +42,11 @@
             </button>
             <div ngbDropdownMenu>
               <!-- *abpPermission="'BookStore.Books.Edit'" -->
-              <button  ngbDropdownItem (click)="editBook(row.id, createModal)">
+              <button *abpPermission="'BookStore.Books.Edit'"  ngbDropdownItem (click)="editBook(row.id, createModal)">
                 {{ '::Edit' | abpLocalization }}
               </button>
               <!-- *abpPermission="'BookStore.Books.Delete'" -->
-              <button  ngbDropdownItem (click)="delete(row.id)">
+              <button *abpPermission="'BookStore.Books.Delete'" ngbDropdownItem (click)="delete(row.id)">
                 {{ '::Delete' | abpLocalization }}
               </button>
             </div>

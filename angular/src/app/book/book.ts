@@ -1,15 +1,16 @@
-import { ListService, PagedResultDto, LocalizationModule } from '@abp/ng.core';
+import { ListService, PagedResultDto, LocalizationModule, LocalizationPipe, PermissionDirective } from '@abp/ng.core';
 import { Component, OnInit, inject } from '@angular/core';
 import { BookDto, BookService, bookTypeOptions } from '../proxy/books';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { CommonModule } from '@angular/common';
 import { NgbDropdownModule, NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbDateNativeAdapter, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
 
 // Add imports for ConfirmationService
-import { ConfirmationService, Confirmation } from '@abp/ng.theme.shared';
+import { ConfirmationService, Confirmation, ThemeSharedModule } from '@abp/ng.theme.shared';
+import { PageModule } from '@abp/ng.components/page';
 
 @Component({
   selector: 'app-book',
@@ -19,11 +20,16 @@ import { ConfirmationService, Confirmation } from '@abp/ng.theme.shared';
   imports: [
     NgxDatatableModule,
     LocalizationModule,
-    CommonModule,
     NgbModalModule,
+    CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     NgbDatepickerModule,
-    NgbDropdownModule
+    NgbDropdownModule,
+    PageModule,
+    LocalizationPipe,
+    PermissionDirective,
+    ThemeSharedModule,
   ],
   providers: [
     ListService,
