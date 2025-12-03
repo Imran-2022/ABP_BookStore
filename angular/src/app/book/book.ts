@@ -1,6 +1,6 @@
 import { ListService, PagedResultDto, LocalizationModule, LocalizationPipe, PermissionDirective } from '@abp/ng.core';
 import { Component, OnInit, inject } from '@angular/core';
-import { BookDto, BookService, bookTypeOptions } from '../proxy/books';
+import { AuthorLookupDto, BookDto, BookService, bookTypeOptions } from '../proxy/books';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { CommonModule } from '@angular/common';
 import { NgbDropdownModule, NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
@@ -11,6 +11,7 @@ import { NgbDateNativeAdapter, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap
 // Add imports for ConfirmationService
 import { ConfirmationService, Confirmation, ThemeSharedModule } from '@abp/ng.theme.shared';
 import { PageModule } from '@abp/ng.components/page';
+import { map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-book',
@@ -43,7 +44,7 @@ export class Book implements OnInit {
 
   // Declare selectedBook to hold the current book data for form
   selectedBook = {} as BookDto;
-
+  authors$: Observable<AuthorLookupDto[]>;
   form: FormGroup;
   bookTypes = bookTypeOptions;
 
@@ -54,6 +55,9 @@ export class Book implements OnInit {
   // Inject ConfirmationService
   private readonly confirmation = inject(ConfirmationService);
 
+   constructor() {
+    this.authors$ = this.bookService.getAuthorLookup().pipe(map((r) => r.items));
+  }
   ngOnInit() {
     const streamCreator = (query) => this.bookService.getList(query);
     this.list.hookToQuery(streamCreator).subscribe(res => (this.book = res));
@@ -78,6 +82,7 @@ export class Book implements OnInit {
   // Modified: Initializes the form using data from selectedBook
   buildForm() {
     this.form = this.fb.group({
+      authorId: [this.selectedBook.authorId || null, Validators.required],
       name: [this.selectedBook.name || '', Validators.required],
       type: [this.selectedBook.type || null, Validators.required],
       publishDate: [

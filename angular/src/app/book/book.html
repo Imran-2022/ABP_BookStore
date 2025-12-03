@@ -6,7 +6,8 @@
       </div>
       <!-- *abpPermission="'BookStore.Books.Create'" -->
       <div class="col-md-6 text-end pt-2">
-        <button *abpPermission="'BookStore.Books.Create'" class="btn btn-primary" (click)="openCreateModal(createModal)">
+        <button *abpPermission="'BookStore.Books.Create'" class="btn btn-primary"
+          (click)="openCreateModal(createModal)">
           <i class="fa fa-plus me-1"></i>
           {{ "::NewBook" | abpLocalization }}
         </button>
@@ -15,34 +16,18 @@
   </div>
 
   <div class="card-body">
-    <ngx-datatable
-      class="bootstrap"
-      [rows]="book.items || []"
-      [count]="book.totalCount"
-      [columnMode]="'force'"
-      [headerHeight]="50"
-      [footerHeight]="50"
-      [rowHeight]="50"
-      [reorderable]="false"
-    >
-      <ngx-datatable-column 
-        [name]="'::Actions' | abpLocalization"
-        [maxWidth]="150"
-        [sortable]="false"
-      >
+    <ngx-datatable class="bootstrap" [rows]="book.items || []" [count]="book.totalCount" [columnMode]="'force'"
+      [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [reorderable]="false">
+      <ngx-datatable-column [name]="'::Actions' | abpLocalization" [maxWidth]="150" [sortable]="false">
         <ng-template let-row="row" ngx-datatable-cell-template>
-          <div  ngbDropdown container="body" class="d-inline-block">
-            <button
-              class="btn btn-primary btn-sm dropdown-toggle"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              ngbDropdownToggle
-            >
+          <div ngbDropdown container="body" class="d-inline-block">
+            <button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+              ngbDropdownToggle>
               <i class="fa fa-cog me-1"></i>{{ '::Actions' | abpLocalization }}
             </button>
             <div ngbDropdownMenu>
               <!-- *abpPermission="'BookStore.Books.Edit'" -->
-              <button *abpPermission="'BookStore.Books.Edit'"  ngbDropdownItem (click)="editBook(row.id, createModal)">
+              <button *abpPermission="'BookStore.Books.Edit'" ngbDropdownItem (click)="editBook(row.id, createModal)">
                 {{ '::Edit' | abpLocalization }}
               </button>
               <!-- *abpPermission="'BookStore.Books.Delete'" -->
@@ -54,6 +39,8 @@
         </ng-template>
       </ngx-datatable-column>
       <ngx-datatable-column [name]="'::Name' | abpLocalization" prop="name"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'::Author' | abpLocalization" prop="authorName"
+        [sortable]="false"></ngx-datatable-column>
 
       <ngx-datatable-column [name]="'::Type' | abpLocalization" prop="type">
         <ng-template ngx-datatable-cell-template let-row="row">
@@ -84,6 +71,16 @@
 
   <div class="modal-body">
     <form [formGroup]="form">
+      <div class="form-group">
+  <label for="author-id">Author</label><span> * </span>
+  <select class="form-control" id="author-id" formControlName="authorId">
+    <option [ngValue]="null">Select author</option>
+    <option [ngValue]="author.id" *ngFor="let author of authors$ | async">
+      {{ author.name }}
+    </option>
+  </select>
+</div>
+
       <div class="mt-2">
         <label>Name *</label>
         <input class="form-control" formControlName="name" />
@@ -106,13 +103,8 @@
 
       <div class="mt-2">
         <label>Publish Date *</label>
-        <input
-          class="form-control"
-          ngbDatepicker
-          #dp="ngbDatepicker"
-          formControlName="publishDate"
-          (click)="dp.toggle()"
-        />
+        <input class="form-control" ngbDatepicker #dp="ngbDatepicker" formControlName="publishDate"
+          (click)="dp.toggle()" />
       </div>
     </form>
   </div>
