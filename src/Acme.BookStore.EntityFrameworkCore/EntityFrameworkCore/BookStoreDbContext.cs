@@ -16,6 +16,7 @@ using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Acme.BookStore.Books;
 using Acme.BookStore.Authors;
+using Acme.BookStore.Publications;
 
 namespace Acme.BookStore.EntityFrameworkCore;
 
@@ -44,6 +45,7 @@ public class BookStoreDbContext :
      */
 
     // Identity
+    public DbSet<Publication> Publications { get; set; }
     public DbSet<Author> Authors { get; set; }
     public DbSet<Book> Books { get; set; }
     public DbSet<IdentityUser> Users { get; set; }
@@ -82,7 +84,7 @@ public class BookStoreDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureTenantManagement();
         builder.ConfigureBlobStoring();
-        
+
         /* Configure your own tables/entities inside here */
 
         //builder.Entity<YourEntity>(b =>
@@ -91,29 +93,41 @@ public class BookStoreDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
-         builder.Entity<Book>(b =>
-        {
-            b.ToTable(BookStoreConsts.DbTablePrefix + "Books",
-                BookStoreConsts.DbSchema);
-            b.ConfigureByConvention(); //auto configure for the base class props
-            b.Property(x => x.Name).IsRequired().HasMaxLength(128);
-            // ADD THE MAPPING FOR THE RELATION
-            b.HasOne<Author>().WithMany().HasForeignKey(x => x.AuthorId).IsRequired();
-        });
+        builder.Entity<Book>(b =>
+       {
+           b.ToTable(BookStoreConsts.DbTablePrefix + "Books",
+               BookStoreConsts.DbSchema);
+           b.ConfigureByConvention(); //auto configure for the base class props
+           b.Property(x => x.Name).IsRequired().HasMaxLength(128);
+           // ADD THE MAPPING FOR THE RELATION
+           b.HasOne<Author>().WithMany().HasForeignKey(x => x.AuthorId).IsRequired();
+       });
 
         builder.Entity<Author>(b =>
-{
-    b.ToTable(BookStoreConsts.DbTablePrefix + "Authors",
-        BookStoreConsts.DbSchema);
-    
-    b.ConfigureByConvention();
-    
-    b.Property(x => x.Name)
-        .IsRequired()
-        .HasMaxLength(AuthorConsts.MaxNameLength);
+        {
+            b.ToTable(BookStoreConsts.DbTablePrefix + "Authors",
+                BookStoreConsts.DbSchema);
 
-    b.HasIndex(x => x.Name);
-});
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(AuthorConsts.MaxNameLength);
+
+            b.HasIndex(x => x.Name);
+        });
+
+        // Publication table mapping
+        builder.Entity<Publication>(b =>
+        {
+            b.ToTable(BookStoreConsts.DbTablePrefix + "Publications", BookStoreConsts.DbSchema);
+            b.ConfigureByConvention(); // Configures Id, CreationTime, etc.
+            b.Property(p => p.Name).IsRequired().HasMaxLength(PublicationConsts.MaxNameLength);
+            b.Property(p => p.Location).HasMaxLength(PublicationConsts.MaxLocationLength);
+            b.Property(p => p.Website).HasMaxLength(PublicationConsts.MaxWebsiteLength);
+
+            b.HasIndex(p => p.Name); // Optional: unique index could be added
+        });
 
     }
 }

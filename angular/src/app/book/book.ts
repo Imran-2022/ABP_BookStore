@@ -55,12 +55,18 @@ export class Book implements OnInit {
   // Inject ConfirmationService
   private readonly confirmation = inject(ConfirmationService);
 
-   constructor() {
+  constructor() {
     this.authors$ = this.bookService.getAuthorLookup().pipe(map((r) => r.items));
   }
   ngOnInit() {
     const streamCreator = (query) => this.bookService.getList(query);
-    this.list.hookToQuery(streamCreator).subscribe(res => (this.book = res));
+    this.list.hookToQuery(streamCreator).subscribe(res => {
+      this.book = res;
+      console.log('Loaded books:', this.book);
+    });
+    // direct console after asnyc method not work remmember it man !! 
+    // Move the log inside the subscribe callback to see the actual result.
+
   }
 
   // Modified: Sets selectedBook to an empty object before opening the modal
@@ -115,4 +121,6 @@ export class Book implements OnInit {
       }
     });
   }
+
+
 }

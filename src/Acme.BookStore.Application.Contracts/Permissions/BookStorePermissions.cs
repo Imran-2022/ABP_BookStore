@@ -12,10 +12,10 @@ public static class BookStorePermissions
         public const string Delete = Default + ".Delete";
     }
     public static class Dashboard
-        {
-            public const string Host = GroupName + ".Dashboard.Host";
-            public const string Tenant = GroupName + ".Dashboard.Tenant";
-        }
+    {
+        public const string Host = GroupName + ".Dashboard.Host";
+        public const string Tenant = GroupName + ".Dashboard.Tenant";
+    }
 
     // other permissions...
     // other permissions...
@@ -28,4 +28,13 @@ public static class BookStorePermissions
         public const string Edit = Default + ".Edit";
         public const string Delete = Default + ".Delete";
     }
+
+    public static class Publications
+    {
+        public const string Default = GroupName + ".Publications";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+
 }

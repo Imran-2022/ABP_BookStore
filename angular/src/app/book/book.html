@@ -42,6 +42,8 @@
       <ngx-datatable-column [name]="'::Author' | abpLocalization" prop="authorName"
         [sortable]="false"></ngx-datatable-column>
 
+      <!-- if we add sortable = false, then it will make it unsortable great. -->
+
       <ngx-datatable-column [name]="'::Type' | abpLocalization" prop="type">
         <ng-template ngx-datatable-cell-template let-row="row">
           {{ '::Enum:BookType.' + row.type | abpLocalization }}
@@ -72,14 +74,14 @@
   <div class="modal-body">
     <form [formGroup]="form">
       <div class="form-group">
-  <label for="author-id">Author</label><span> * </span>
-  <select class="form-control" id="author-id" formControlName="authorId">
-    <option [ngValue]="null">Select author</option>
-    <option [ngValue]="author.id" *ngFor="let author of authors$ | async">
-      {{ author.name }}
-    </option>
-  </select>
-</div>
+        <label for="author-id">Author</label><span> * </span>
+        <select class="form-control" id="author-id" formControlName="authorId">
+          <option [ngValue]="null">Select author</option>
+          <option [ngValue]="author.id" *ngFor="let author of authors$ | async">
+            {{ author.name }}
+          </option>
+        </select>
+      </div>
 
       <div class="mt-2">
         <label>Name *</label>

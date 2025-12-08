@@ -1,5 +1,6 @@
 using Acme.BookStore.Authors;
 using Acme.BookStore.Books;
+using Acme.BookStore.Publications;
 using Riok.Mapperly.Abstractions;
 using Volo.Abp.Mapperly;
 
@@ -35,7 +36,7 @@ public partial class CreateUpdateBookDtoToBookMapper : MapperBase<CreateUpdateBo
 public partial class AuthorToAuthorDtoMapper : MapperBase<Author, AuthorDto>
 {
     public override partial AuthorDto Map(Author source);
-    
+
     public override partial void Map(Author source, AuthorDto destination);
 }
 
@@ -45,4 +46,11 @@ public partial class AuthorToAuthorLookupDtoMapper : MapperBase<Author, AuthorLo
     public override partial AuthorLookupDto Map(Author source);
 
     public override partial void Map(Author source, AuthorLookupDto destination);
+}
+
+[Mapper]
+public partial class PublicationToPublicationDtoMapper : MapperBase<Publication, PublicationDto>
+{
+    public override partial PublicationDto Map(Publication source);
+    public override partial void Map(Publication source, PublicationDto destination);
 }
