@@ -14,4 +14,5 @@ public interface IBookAppService :
 {
 // ADD the NEW METHOD
     Task<ListResultDto<AuthorLookupDto>> GetAuthorLookupAsync();
+    Task<ListResultDto<PublicationLookupDto>> GetPublicationLookupAsync();
 }

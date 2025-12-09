@@ -54,3 +54,11 @@ public partial class PublicationToPublicationDtoMapper : MapperBase<Publication,
     public override partial PublicationDto Map(Publication source);
     public override partial void Map(Publication source, PublicationDto destination);
 }
+
+[Mapper]
+public partial class PublicationToPublicationLookupDtoMapper : MapperBase<Publication, PublicationLookupDto>
+{
+    public override partial PublicationLookupDto Map(Publication source);
+
+    public override partial void Map(Publication source, PublicationLookupDto destination);
+}

@@ -5,6 +5,7 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Acme.BookStore.Authors;
 using Acme.BookStore.Permissions;
+using Acme.BookStore.Publications;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -24,13 +25,16 @@ public class BookAppService :
     IBookAppService //implement the IBookAppService
 {
     private readonly IAuthorRepository _authorRepository;
+    private readonly IPublicationRepository _publicationRepository;
 
     public BookAppService(
         IRepository<Book, Guid> repository,
-        IAuthorRepository authorRepository)
+        IAuthorRepository authorRepository,
+        IPublicationRepository publicationRepository)
         : base(repository)
     {
         _authorRepository = authorRepository;
+        _publicationRepository = publicationRepository;
         GetPolicyName = BookStorePermissions.Books.Default;
         GetListPolicyName = BookStorePermissions.Books.Default;
         CreatePolicyName = BookStorePermissions.Books.Create;
@@ -40,26 +44,29 @@ public class BookAppService :
 
     public override async Task<BookDto> GetAsync(Guid id)
     {
-        //Get the IQueryable<Book> from the repository
         var queryable = await Repository.GetQueryableAsync();
 
-        //Prepare a query to join books and authors
         var query = from book in queryable
-            join author in await _authorRepository.GetQueryableAsync() on book.AuthorId equals author.Id
-            where book.Id == id
-            select new { book, author };
+                    join author in await _authorRepository.GetQueryableAsync()
+                        on book.AuthorId equals author.Id
+                    join publication in await _publicationRepository.GetQueryableAsync()
+                        on book.PublicationId equals publication.Id
+                    where book.Id == id
+                    select new { book, author, publication };
 
-        //Execute the query and get the book with author
         var queryResult = await AsyncExecuter.FirstOrDefaultAsync(query);
+
         if (queryResult == null)
-        {
             throw new EntityNotFoundException(typeof(Book), id);
-        }
 
         var bookDto = ObjectMapper.Map<Book, BookDto>(queryResult.book);
+
         bookDto.AuthorName = queryResult.author.Name;
+        bookDto.PublicationName = queryResult.publication.Name;
+
         return bookDto;
     }
+
 
     public override async Task<PagedResultDto<BookDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
@@ -68,25 +75,23 @@ public class BookAppService :
 
         //Prepare a query to join books and authors
         var query = from book in queryable
-            join author in await _authorRepository.GetQueryableAsync() on book.AuthorId equals author.Id
-            select new {book, author};
+                    join author in await _authorRepository.GetQueryableAsync()
+                        on book.AuthorId equals author.Id
+                    join publication in await _publicationRepository.GetQueryableAsync()
+                        on book.PublicationId equals publication.Id
+                    select new { book, author, publication };
 
-        //Paging
-        query = query
-            .OrderBy(NormalizeSorting(input.Sorting))
-            .Skip(input.SkipCount)
-            .Take(input.MaxResultCount);
-
-        //Execute the query and get a list
         var queryResult = await AsyncExecuter.ToListAsync(query);
 
-        //Convert the query result to a list of BookDto objects
         var bookDtos = queryResult.Select(x =>
         {
             var bookDto = ObjectMapper.Map<Book, BookDto>(x.book);
-            bookDto.AuthorName = x.author.Name;
+            bookDto.AuthorName = x.author.Name;           // Author name
+            bookDto.PublicationName = x.publication.Name; // Publication name
+            bookDto.PublicationId = x.publication.Id;     // Publication ID
             return bookDto;
         }).ToList();
+
 
         //Get the total count with another query
         var totalCount = await Repository.GetCountAsync();
@@ -106,6 +111,28 @@ public class BookAppService :
         );
     }
 
+    // --- Publication Lookup (new)
+    // public async Task<ListResultDto<PublicationLookupDto>> GetPublicationLookupAsync()
+    // {
+    //     var publications = await _publicationRepository.GetListAsync();
+
+    //     var lookup = publications.Select(p => new PublicationLookupDto
+    //     {
+    //         Id = p.Id,
+    //         Name = p.Name
+    //     }).ToList();
+
+    //     return new ListResultDto<PublicationLookupDto>(lookup);
+    // }
+    // --- Publication Lookup
+    public async Task<ListResultDto<PublicationLookupDto>> GetPublicationLookupAsync()
+    {
+        var publications = await _publicationRepository.GetListAsync();
+
+        var lookup = ObjectMapper.Map<List<Publication>, List<PublicationLookupDto>>(publications);
+
+        return new ListResultDto<PublicationLookupDto>(lookup);
+    }
     private static string NormalizeSorting(string sorting)
     {
         if (sorting.IsNullOrEmpty())
@@ -122,6 +149,16 @@ public class BookAppService :
             );
         }
 
+        if (sorting.Contains("publicationName", StringComparison.OrdinalIgnoreCase))
+        {
+            return sorting.Replace(
+                "publicationName",
+                "publication.Name",
+                StringComparison.OrdinalIgnoreCase
+            );
+        }
+
         return $"book.{sorting}";
     }
+
 }

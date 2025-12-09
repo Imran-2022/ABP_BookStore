@@ -42,6 +42,10 @@
       <ngx-datatable-column [name]="'::Author' | abpLocalization" prop="authorName"
         [sortable]="false"></ngx-datatable-column>
 
+      <ngx-datatable-column [name]="'::Publication' | abpLocalization" prop="publicationName"
+        ></ngx-datatable-column>
+
+
       <!-- if we add sortable = false, then it will make it unsortable great. -->
 
       <ngx-datatable-column [name]="'::Type' | abpLocalization" prop="type">
@@ -79,6 +83,16 @@
           <option [ngValue]="null">Select author</option>
           <option [ngValue]="author.id" *ngFor="let author of authors$ | async">
             {{ author.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="publication-id">Publication</label><span> * </span>
+        <select class="form-control" id="publication-id" formControlName="publicationId">
+          <option [ngValue]="null">Select publication</option>
+          <option [ngValue]="publication.id" *ngFor="let publication of publications$ | async">
+            {{ publication.name }}
           </option>
         </select>
       </div>

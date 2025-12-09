@@ -101,6 +101,7 @@ public class BookStoreDbContext :
            b.Property(x => x.Name).IsRequired().HasMaxLength(128);
            // ADD THE MAPPING FOR THE RELATION
            b.HasOne<Author>().WithMany().HasForeignKey(x => x.AuthorId).IsRequired();
+           b.HasOne<Publication>().WithMany().HasForeignKey(x => x.PublicationId).IsRequired();
         //    Cascade delete behavior:
 
     // You didn’t explicitly set OnDelete(DeleteBehavior.Cascade).

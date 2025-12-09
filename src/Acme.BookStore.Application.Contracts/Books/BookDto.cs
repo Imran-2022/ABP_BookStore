@@ -7,6 +7,8 @@ public class BookDto : AuditedEntityDto<Guid>
 {
     public Guid AuthorId { get; set; }
     public string AuthorName { get; set; }
+    public Guid PublicationId { get; set; }
+    public string PublicationName { get; set; }
 
     public string Name { get; set; }
 

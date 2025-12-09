@@ -45,6 +45,8 @@
     "BirthDate": "Birth date",
     "NewAuthor": "New author",
     "BookStore:00002": "There is already an Book with the same name: {name}",
-    "NewPublication": "New Publication"
+    "NewPublication": "New Publication",
+    "Publication": "Publication",
+    "Author": "Author"
   }
 }

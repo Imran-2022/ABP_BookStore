@@ -8,6 +8,8 @@ export interface AuthorLookupDto extends EntityDto<string> {
 export interface BookDto extends AuditedEntityDto<string> {
   authorId?: string;
   authorName?: string;
+  publicationId?: string;
+  publicationName?: string;
   name?: string;
   type?: BookType;
   publishDate?: string;
@@ -20,4 +22,9 @@ export interface CreateUpdateBookDto {
   publishDate: string;
   price: number;
   authorId?: string;
+  publicationId?: string;
+}
+
+export interface PublicationLookupDto extends EntityDto<string> {
+  name?: string;
 }

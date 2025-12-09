@@ -1,6 +1,6 @@
 import { ListService, PagedResultDto, LocalizationModule, LocalizationPipe, PermissionDirective } from '@abp/ng.core';
 import { Component, OnInit, inject } from '@angular/core';
-import { AuthorLookupDto, BookDto, BookService, bookTypeOptions } from '../proxy/books';
+import { AuthorLookupDto, BookDto, BookService, bookTypeOptions, PublicationLookupDto } from '../proxy/books';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { CommonModule } from '@angular/common';
 import { NgbDropdownModule, NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
@@ -45,6 +45,7 @@ export class Book implements OnInit {
   // Declare selectedBook to hold the current book data for form
   selectedBook = {} as BookDto;
   authors$: Observable<AuthorLookupDto[]>;
+  publications$: Observable<PublicationLookupDto[]>;
   form: FormGroup;
   bookTypes = bookTypeOptions;
 
@@ -57,12 +58,17 @@ export class Book implements OnInit {
 
   constructor() {
     this.authors$ = this.bookService.getAuthorLookup().pipe(map((r) => r.items));
+    this.publications$ = this.bookService.getPublicationLookup().pipe(map((r) => r.items));
   }
   ngOnInit() {
     const streamCreator = (query) => this.bookService.getList(query);
     this.list.hookToQuery(streamCreator).subscribe(res => {
       this.book = res;
       console.log('Loaded books:', this.book);
+      this.publications$.subscribe(pubs => {
+        console.log("publications data:", pubs);
+      });
+
     });
     // direct console after asnyc method not work remmember it man !! 
     // Move the log inside the subscribe callback to see the actual result.
@@ -89,6 +95,7 @@ export class Book implements OnInit {
   buildForm() {
     this.form = this.fb.group({
       authorId: [this.selectedBook.authorId || null, Validators.required],
+      publicationId: [this.selectedBook.publicationId || null, Validators.required],
       name: [this.selectedBook.name || '', Validators.required],
       type: [this.selectedBook.type || null, Validators.required],
       publishDate: [
@@ -121,6 +128,5 @@ export class Book implements OnInit {
       }
     });
   }
-
 
 }
