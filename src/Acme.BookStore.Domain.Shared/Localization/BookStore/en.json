@@ -5,7 +5,9 @@
     "Welcome": "Welcome",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP. For more information, visit abp.io.",
     "Menu:BookStore": "Book Store",
+    "Menu:BookStore:Publications": "Book Store - Publications",
     "Menu:Books": "Books",
+    "Menu:Publications": "Publications",
     "Actions": "Actions",
     "Close": "Close",
     "Delete": "Delete",
@@ -41,9 +43,8 @@
     "Authors": "Authors",
     "AuthorDeletionConfirmationMessage": "Are you sure to delete the author '{0}'?",
     "BirthDate": "Birth date",
-    "NewAuthor": "New author"
-
-
-
+    "NewAuthor": "New author",
+    "BookStore:00002": "There is already an Book with the same name: {name}",
+    "NewPublication": "New Publication"
   }
 }

@@ -4,6 +4,6 @@ namespace Acme.BookStore.Publications
 {
     public class GetPublicationListDto : PagedAndSortedResultRequestDto
     {
-        public string Filter { get; set; }
+        public string? Filter { get; set; }
     }
 }

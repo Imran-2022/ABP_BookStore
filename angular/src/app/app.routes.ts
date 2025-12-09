@@ -21,18 +21,28 @@ export const APP_ROUTES: Routes = [
     },
   },
   // ADD NEW AUTHORS ROUTE HERE
-    {
-        path: 'authors', // <-- The URL path
-        pathMatch: 'full',
-        // Assuming you will create an Author standalone component soon:
-        loadComponent: () => import('./author/author').then(c => c.Author), 
-        canActivate: [authGuard, permissionGuard],
-        data: {
-            // Assuming you will define this policy in C# as "BookStore.Authors"
-            requiredPolicy: 'BookStore.Authors', 
-            // redirectPath: '/',
-        },
+  {
+    path: 'authors', // <-- The URL path
+    pathMatch: 'full',
+    // Assuming you will create an Author standalone component soon:
+    loadComponent: () => import('./author/author').then(c => c.Author),
+    canActivate: [authGuard, permissionGuard],
+    data: {
+      // Assuming you will define this policy in C# as "BookStore.Authors"
+      requiredPolicy: 'BookStore.Authors',
+      // redirectPath: '/',
     },
+  },
+  {
+    path: 'publications',
+    pathMatch: 'full',
+    loadComponent: () => import('./publication/publication').then(c => c.Publication),
+    canActivate: [authGuard, permissionGuard],
+    data: {
+      requiredPolicy: 'BookStore.Publications',
+    },
+  },
+
   {
     path: 'account',
     loadChildren: () => import('@abp/ng.account').then(c => c.createRoutes()),

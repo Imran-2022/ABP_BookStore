@@ -26,6 +26,14 @@ function configureRoutes() {
       layout: eLayoutType.application,
     },
     {
+      path: '/book-store',
+      name: '::Menu:BookStore:Publications',
+      iconClass: 'fas fa-book',
+      order: 3,
+      requiredPolicy: 'BookStore.Publications',
+      layout: eLayoutType.application,
+    },
+    {
       path: '/books',
       name: '::Menu:Books',
       parentName: '::Menu:BookStore',
@@ -39,8 +47,13 @@ function configureRoutes() {
       layout: eLayoutType.application,
       requiredPolicy: 'BookStore.Authors',
     },
-
-
+    {
+      path: '/publications',
+      name: '::Menu:Publications',
+      parentName: '::Menu:BookStore:Publications',
+      layout: eLayoutType.application,
+      requiredPolicy: 'BookStore.Publications',
+    },
 
   ]);
 }

@@ -1,0 +1,151 @@
+<div class="card">
+  <div class="card-header">
+    <div class="row">
+      <div class="col col-md-6">
+        <h5 class="card-title">
+          {{ '::Menu:Publications' | abpLocalization }}
+        </h5>
+      </div>
+
+      <div class="text-end col col-md-6">
+        <div class="text-lg-end pt-2">
+          <button
+            *abpPermission="'BookStore.Publications.Create'"
+            class="btn btn-primary"
+            id="create"
+            type="button"
+            (click)="createPublication()">
+            <i class="fa fa-plus me-1"></i>
+            {{ '::NewPublication' | abpLocalization }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <ngx-datatable
+      [rows]="publication.items"
+      [count]="publication.totalCount"
+      [list]="list"
+      default>
+
+      <!-- ACTIONS COLUMN -->
+      <ngx-datatable-column
+        [name]="'::Actions' | abpLocalization"
+        [maxWidth]="150"
+        [sortable]="false">
+
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div ngbDropdown container="body" class="d-inline-block">
+            <button
+              class="btn btn-primary btn-sm dropdown-toggle"
+              ngbDropdownToggle>
+              <i class="fa fa-cog me-1"></i>{{ '::Actions' | abpLocalization }}
+            </button>
+
+            <div ngbDropdownMenu>
+              <button
+                *abpPermission="'BookStore.Publications.Edit'"
+                ngbDropdownItem
+                (click)="editPublication(row.id)">
+                {{ '::Edit' | abpLocalization }}
+              </button>
+
+              <button
+                *abpPermission="'BookStore.Publications.Delete'"
+                ngbDropdownItem
+                (click)="delete(row.id)">
+                {{ '::Delete' | abpLocalization }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <!-- NAME COLUMN -->
+      <ngx-datatable-column
+        prop="name"
+        [name]="'::Name' | abpLocalization">
+      </ngx-datatable-column>
+
+      <!-- LOCATION COLUMN -->
+      <ngx-datatable-column
+        prop="location"
+        [name]="'::Location' | abpLocalization">
+      </ngx-datatable-column>
+
+      <!-- WEBSITE COLUMN -->
+      <ngx-datatable-column
+        prop="website"
+        [name]="'::Website' | abpLocalization">
+      </ngx-datatable-column>
+
+    </ngx-datatable>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!--          MODAL FORM          -->
+<!-- ============================= -->
+
+<abp-modal [(visible)]="isModalOpen">
+  <ng-template #abpHeader>
+    <h3>
+      {{ (selectedPublication.id ? '::EditPublication' : '::NewPublication') | abpLocalization }}
+    </h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <form [formGroup]="form">
+
+      <!-- NAME -->
+      <div class="form-group mb-3">
+        <label>Name *</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="name"
+          placeholder="Enter publication name"
+        />
+      </div>
+
+      <!-- LOCATION -->
+      <div class="form-group mb-3">
+        <label>Location *</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="location"
+          placeholder="Enter publication location"
+        />
+      </div>
+
+      <!-- WEBSITE -->
+      <div class="form-group mb-3">
+        <label>Website *</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="website"
+          placeholder="https://www.example.com"
+        />
+      </div>
+
+    </form>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-secondary" abpClose>
+      {{ '::Close' | abpLocalization }}
+    </button>
+
+    <button
+      class="btn btn-primary"
+      (click)="save()"
+      [disabled]="form.invalid">
+      <i class="fa fa-check me-1"></i>
+      {{ '::Save' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>

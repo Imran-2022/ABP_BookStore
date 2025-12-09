@@ -101,6 +101,11 @@ public class BookStoreDbContext :
            b.Property(x => x.Name).IsRequired().HasMaxLength(128);
            // ADD THE MAPPING FOR THE RELATION
            b.HasOne<Author>().WithMany().HasForeignKey(x => x.AuthorId).IsRequired();
+        //    Cascade delete behavior:
+
+    // You didn’t explicitly set OnDelete(DeleteBehavior.Cascade).
+    // EF Core by default enables cascade delete for required relationships (IsRequired()), which is why deleting an author deletes the related books automatically.
+    // If you set .IsRequired(false) (optional relationship), EF Core would default to Restrict (or SetNull depending on the database provider).
        });
 
         builder.Entity<Author>(b =>
