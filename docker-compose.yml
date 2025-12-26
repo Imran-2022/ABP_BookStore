@@ -1,0 +1,81 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: BookStore
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - bookstore
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@bookstore.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bookstore
+
+  migrator:
+    build:
+      context: .
+      dockerfile: ./src/Acme.BookStore.DbMigrator/Dockerfile
+    environment:
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=BookStore;User ID=postgres;Password=123456;"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bookstore
+    profiles:
+      - migrate
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./src/Acme.BookStore.HttpApi.Host/Dockerfile
+    environment:
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=BookStore;User ID=postgres;Password=123456;"
+      App__SelfUrl: "http://localhost:8080"
+      App__AngularUrl: "http://localhost:4200"
+      App__CorsOrigins: "http://localhost:4200"
+      App__RedirectAllowedUrls: "http://localhost:4200"
+      AuthServer__Authority: "http://localhost:8080"
+      AuthServer__RequireHttpsMetadata: "false"
+    ports:
+      - "8080:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bookstore
+
+  frontend:
+    build:
+      context: ./angular
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - bookstore
+
+volumes:
+  postgres_data:
+
+networks:
+  bookstore:

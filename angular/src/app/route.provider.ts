@@ -18,19 +18,19 @@ function configureRoutes() {
       layout: eLayoutType.application,
     },
     {
-      path: '/book-store',
+      path: '/books',
       name: '::Menu:BookStore',
       iconClass: 'fas fa-book',
       order: 2,
-      requiredPolicy: 'BookStore.Books || BookStore.Authors',
+      // requiredPolicy: 'BookStore.Books || BookStore.Authors',
       layout: eLayoutType.application,
     },
     {
-      path: '/book-store',
+      path: '/publications',
       name: '::Menu:BookStore:Publications',
       iconClass: 'fas fa-book',
       order: 3,
-      requiredPolicy: 'BookStore.Publications',
+      // requiredPolicy: 'BookStore.Publications',
       layout: eLayoutType.application,
     },
     {
