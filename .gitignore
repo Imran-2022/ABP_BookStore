@@ -272,3 +272,4 @@ src/Acme.BookStore.Blazor.Server.Tiered/Logs/*
 # IdentityServer temp files
 tempkey.rsa
 tempkey.jwk
+Logs/

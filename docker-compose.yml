@@ -61,6 +61,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      - ./Logs:/app/Logs
     networks:
       - bookstore
 
@@ -73,9 +75,47 @@ services:
       - backend
     networks:
       - bookstore
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - bookstore
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - bookstore
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yml
+    networks:
+      - bookstore
+
+  promtail:
+    image: grafana/promtail:latest
+    command: -config.file=/etc/promtail/promtail.yml
+    volumes:
+      - ./promtail.yml:/etc/promtail/promtail.yml
+      - ./Logs:/app/Logs:ro
+    depends_on:
+      - loki
+    networks:
+      - bookstore
+
 
 volumes:
   postgres_data:
+  grafana_data:
 
 networks:
   bookstore:

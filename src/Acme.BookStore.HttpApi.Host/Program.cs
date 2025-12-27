@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using OpenTelemetry.Metrics;
 
 namespace Acme.BookStore;
 
@@ -21,6 +22,15 @@ public class Program
         {
             Log.Information("Starting Acme.BookStore.HttpApi.Host.");
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddOpenTelemetry()
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddPrometheusExporter();
+            });
+
             builder.Host
                 .AddAppSettingsSecretsJson()
                 .UseAutofac()
@@ -41,6 +51,7 @@ public class Program
                 });
             await builder.AddApplicationAsync<BookStoreHttpApiHostModule>();
             var app = builder.Build();
+            app.MapPrometheusScrapingEndpoint("/metrics");
             await app.InitializeApplicationAsync();
             await app.RunAsync();
             return 0;
