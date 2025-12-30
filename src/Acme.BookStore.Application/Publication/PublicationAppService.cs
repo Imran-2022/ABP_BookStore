@@ -5,6 +5,7 @@ using Acme.BookStore.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Microsoft.Extensions.Logging;
 using Volo.Abp.Domain.Repositories;
 
 namespace Acme.BookStore.Publications
@@ -24,8 +25,10 @@ namespace Acme.BookStore.Publications
         }
 
         public async Task<PublicationDto> GetAsync(Guid id)
-        {
+        {   
+            Logger.LogInformation("Getting publication with Id: {Id}", id);
             var publication = await _publicationRepository.GetAsync(id);
+            Logger.LogInformation("Publication {Id} retrieved successfully", id);
             return ObjectMapper.Map<Publication, PublicationDto>(publication);
         }
 
@@ -46,7 +49,7 @@ namespace Acme.BookStore.Publications
             var totalCount = string.IsNullOrWhiteSpace(input.Filter)
                 ? await _publicationRepository.CountAsync()
                 : await _publicationRepository.CountAsync(p => p.Name.Contains(input.Filter));
-
+            Logger.LogInformation("Returned {Count} publications", publications.Count);
             return new PagedResultDto<PublicationDto>(
                 totalCount,
                 ObjectMapper.Map<List<Publication>, List<PublicationDto>>(publications)
@@ -58,16 +61,25 @@ namespace Acme.BookStore.Publications
         {
             var publication = await _publicationManager.CreateAsync(input.Name, input.Location, input.Website);
             await _publicationRepository.InsertAsync(publication);
+            Logger.LogInformation(
+                "Publication created successfully"
+            );
             return ObjectMapper.Map<Publication, PublicationDto>(publication);
         }
 
         [Authorize(BookStorePermissions.Publications.Edit)]
         public async Task UpdateAsync(Guid id, UpdatePublicationDto input)
         {
+            Logger.LogInformation("Updating publication with Id: {Id}", id);
             var publication = await _publicationRepository.GetAsync(id);
 
             if (publication.Name != input.Name)
             {
+                Logger.LogInformation(
+                    "Changing publication name from {OldName} to {NewName}",
+                    publication.Name,
+                    input.Name
+                );
                 await _publicationManager.ChangeNameAsync(publication, input.Name);
             }
 
@@ -75,12 +87,15 @@ namespace Acme.BookStore.Publications
             publication.ChangeWebsite(input.Website);
 
             await _publicationRepository.UpdateAsync(publication);
+            Logger.LogInformation("Publication {Id} updated successfully", id);
         }
 
         [Authorize(BookStorePermissions.Publications.Delete)]
         public async Task DeleteAsync(Guid id)
-        {
+        {   
+            Logger.LogWarning("Deleting publication with Id: {Id}", id);
             await _publicationRepository.DeleteAsync(id);
+            Logger.LogInformation("Publication {Id} deleted successfully", id);
         }
     }
 }

@@ -7,30 +7,34 @@ services:
       POSTGRES_PASSWORD: 123456
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      # Docker manages where it lives on your system.
     ports:
       - "5432:5432"
-    networks:
-      - bookstore
+      # host:container mapping
     healthcheck:
+    # readiness test for Postgres
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+      # Healthcheck: ensures Postgres is ready before dependent containers start
 
   pgadmin:
     image: dpage/pgadmin4
+    # UI for managing Postgres
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@bookstore.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
+      # host access via localhost:5050
     depends_on:
       postgres:
         condition: service_healthy
-    networks:
-      - bookstore
+   
 
   migrator:
+  # Custom Dockerfile (DbMigrator) → runs DB migrations
     build:
       context: .
       dockerfile: ./src/Acme.BookStore.DbMigrator/Dockerfile
@@ -39,16 +43,18 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    networks:
-      - bookstore
     profiles:
       - migrate
+      # migrator has a profile because it is a one-time / on-demand job, not a long-running service like the others.
+      # migrate → only runs if you specify this profile
 
   backend:
     build:
       context: .
       dockerfile: ./src/Acme.BookStore.HttpApi.Host/Dockerfile
+      # Custom Dockerfile (HttpApi.Host) →  .NET API
     environment:
+    # Override via Docker environment variable
       ConnectionStrings__Default: "Host=postgres;Port=5432;Database=BookStore;User ID=postgres;Password=123456;"
       App__SelfUrl: "http://localhost:8080"
       App__AngularUrl: "http://localhost:4200"
@@ -56,6 +62,8 @@ services:
       App__RedirectAllowedUrls: "http://localhost:4200"
       AuthServer__Authority: "http://localhost:8080"
       AuthServer__RequireHttpsMetadata: "false"
+      App__HealthCheckUrl: "http://backend:80/health-status"
+      # Environment: DB connection + app URLs + Auth server configs
     ports:
       - "8080:80"
     depends_on:
@@ -63,59 +71,59 @@ services:
         condition: service_healthy
     volumes:
       - ./Logs:/app/Logs
-    networks:
-      - bookstore
 
   frontend:
     build:
       context: ./angular
+    # Dockerfile builds Angular and serves via Nginx
     ports:
       - "4200:80"
     depends_on:
       - backend
-    networks:
-      - bookstore
+    
   grafana:
     image: grafana/grafana:latest
+    # Monitoring UI
     ports:
       - "3000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-    networks:
-      - bookstore
+   
   prometheus:
     image: prom/prometheus:latest
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      - bookstore
+      # Config file: prometheus.yml
+   
   loki:
     image: grafana/loki:latest
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/loki-config.yml
+    # Config file: loki-config.yml
     volumes:
       - ./loki-config.yml:/etc/loki/loki-config.yml
-    networks:
-      - bookstore
 
   promtail:
     image: grafana/promtail:latest
+    # Agent that reads logs from backend and sends to Loki
     command: -config.file=/etc/promtail/promtail.yml
     volumes:
       - ./promtail.yml:/etc/promtail/promtail.yml
       - ./Logs:/app/Logs:ro
+      # Reads logs from ./Logs:/app/Logs
     depends_on:
       - loki
-    networks:
-      - bookstore
-
 
 volumes:
   postgres_data:
   grafana_data:
 
-networks:
-  bookstore:
+# A Docker volume is storage that lives outside the container lifecycle.
+
+# Prometheus & Loki setup
+# prometheus.yml → tells Prometheus to scrape metrics from your backend (backend:80) every 15s
+# loki-config.yml → Loki server configuration (stores logs)
+# promtail.yml → agent that sends logs to Loki, reads from /app/Logs/*.txt

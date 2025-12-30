@@ -1,3 +1,5 @@
+# Promtail is the log collector that reads logs from files and sends them to Loki.
+
 server:
   http_listen_port: 9080
   grpc_listen_port: 0
@@ -15,4 +17,12 @@ scrape_configs:
           - localhost
         labels:
           job: bookstore-backend
-          __path__: /app/Logs/*.txt
+          __path__: /app/Logs/*.json
+    pipeline_stages:
+      - json:
+          expressions:
+            timestamp: Timestamp
+            level: Level
+            message: MessageTemplate
+            source: Properties.SourceContext
+
