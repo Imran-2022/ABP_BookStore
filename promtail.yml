@@ -26,3 +26,10 @@ scrape_configs:
             message: MessageTemplate
             source: Properties.SourceContext
 
+      - labels:
+          level:
+          source:
+
+      - timestamp:
+          source: timestamp
+          format: RFC3339
